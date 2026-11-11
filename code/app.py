@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Servidor web minimo: sube un archivo y lo imprime con CUPS (lp)."""
+import importlib
 import os
 import subprocess
 import uuid
@@ -16,28 +17,9 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "cambia-esto")
 app.config["MAX_CONTENT_LENGTH"] = MAX_MB * 1024 * 1024
 
-PAGE = """
-<!doctype html>
-<html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Imprimir</title>
-<style>
- body{font-family:system-ui,sans-serif;max-width:480px;margin:3rem auto;padding:0 1rem}
- form{display:grid;gap:.8rem} button{padding:.7rem;font-size:1rem;cursor:pointer}
- .msg{padding:.6rem;background:#eef;border-radius:6px;margin-bottom:1rem}
-</style></head><body>
-<h2>Imprimir en HP LaserJet P2055dn</h2>
-{% for m in get_flashed_messages() %}<div class="msg">{{ m }}</div>{% endfor %}
-<form method="post" action="/print" enctype="multipart/form-data">
-  <input type="file" name="file" required>
-  <label>Copias <input type="number" name="copies" value="1" min="1" max="20"></label>
-  <label><input type="checkbox" name="duplex"> Doble cara (duplex)</label>
-  <button type="submit">Imprimir</button>
-</form>
-<p><a href="/queue">Ver cola de impresion</a></p>
-</body></html>
-"""
 
+with open('page.html', 'r') as f:
+    PAGE = f.read()
 
 def allowed(name):
     return "." in name and name.rsplit(".", 1)[1].lower() in ALLOWED
